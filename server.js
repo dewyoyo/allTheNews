@@ -36,6 +36,11 @@ app
 // configure mongoose and start the server
 // =============================================================
 // set mongoose to leverage promises
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+// var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+// mongoose.connect(MONGODB_URI);
+
 mongoose.Promise = Promise;
 
 var dbURI = process.env.MONGODB_URI || "mongodb://localhost:27017/news";
