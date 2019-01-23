@@ -1,6 +1,7 @@
 
-const mongoose = require('mongoose'),
-      uniqueValidator = require('mongoose-unique-validator');
+// const mongoose = require('mongoose'),
+//       uniqueValidator = require('mongoose-unique-validator');
+var mongoose = require("mongoose");
 
 // create Schema class
 const Schema = mongoose.Schema;
@@ -19,8 +20,8 @@ const NoteSchema = new Schema({
   }
 });
 
-// add unique-validator plugin
-NoteSchema.plugin(uniqueValidator);
+// // add unique-validator plugin
+// NoteSchema.plugin(uniqueValidator);
 
 // create the Note model with the NoteSchema
 const Note = mongoose.model("Note", NoteSchema);
