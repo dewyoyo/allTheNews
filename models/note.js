@@ -1,6 +1,3 @@
-
-// const mongoose = require('mongoose'),
-//       uniqueValidator = require('mongoose-unique-validator');
 var mongoose = require("mongoose");
 
 // create Schema class
@@ -19,9 +16,6 @@ const NoteSchema = new Schema({
     default: Date.now
   }
 });
-
-// // add unique-validator plugin
-// NoteSchema.plugin(uniqueValidator);
 
 // create the Note model with the NoteSchema
 const Note = mongoose.model("Note", NoteSchema);

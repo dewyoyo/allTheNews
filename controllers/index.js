@@ -4,18 +4,20 @@ const express = require('express'),
     cheerio = require('cheerio'),
     Article = require('../models/article'),
     Note = require('../models/note');
+// Our scraping tools
+// Axios is a promised-based http library, similar to jQuery's Ajax method
+// It works on the client and on the server
+var axios = require("axios");
 
-    
-   
 // root route
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
     Article
         .find({})
         .where('saved').equals(false)
         .where('deleted').equals(false)
         .sort('-date')
         .limit(20)
-        .exec(function(error, articles) {
+        .exec(function (error, articles) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -32,14 +34,14 @@ router.get('/', function(req, res) {
 });
 
 // saved articles
-router.get('/saved', function(req, res) {
+router.get('/saved', function (req, res) {
     Article
         .find({})
         .where('saved').equals(true)
         .where('deleted').equals(false)
         .populate('notes')
         .sort('-date')
-        .exec(function(error, articles) {
+        .exec(function (error, articles) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -58,14 +60,14 @@ router.get('/saved', function(req, res) {
 
 
 // deleted articles
-router.get('/deleted', function(req, res) {
+router.get('/deleted', function (req, res) {
     Article
         .find({})
         .where('saved').equals(true)
         .where('deleted').equals(true)
         .populate('notes')
         .sort('-date')
-        .exec(function(error, articles) {
+        .exec(function (error, articles) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -85,10 +87,10 @@ router.get('/deleted', function(req, res) {
 //=======================api/articles==============================
 
 // get all articles from database
-router.get('/api/articles', function(req, res) {
+router.get('/api/articles', function (req, res) {
     Article
         .find({})
-        .exec(function(error, docs) {
+        .exec(function (error, docs) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -99,13 +101,13 @@ router.get('/api/articles', function(req, res) {
 });
 
 // get all saved articles
-router.get('/api/articles/saved', function(req, res) {
+router.get('/api/articles/saved', function (req, res) {
     Article
         .find({})
         .where('saved').equals(true)
         .where('deleted').equals(false)
         .populate('notes')
-        .exec(function(error, docs) {
+        .exec(function (error, docs) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -117,12 +119,12 @@ router.get('/api/articles/saved', function(req, res) {
 
 
 // save an article
-router.post('/api/articles/save/:id', function(req, res) {
+router.post('/api/articles/save/:id', function (req, res) {
     Article.findByIdAndUpdate(req.params.id, {
-        $set: { saved: true}
-        },
+        $set: { saved: true }
+    },
         { new: true },
-        function(error, doc) {
+        function (error, doc) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -134,11 +136,11 @@ router.post('/api/articles/save/:id', function(req, res) {
 
 
 // delete a saved article
-router.delete('/api/articles/:id', function(req, res) {
+router.delete('/api/articles/:id', function (req, res) {
     Article.findByIdAndUpdate(req.params.id,
-        { $set: { deleted: true} },
+        { $set: { deleted: true } },
         { new: true },
-        function(error, doc) {
+        function (error, doc) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -150,11 +152,11 @@ router.delete('/api/articles/:id', function(req, res) {
 });
 
 // restore a saved article
-router.post('/api/restore/:id', function(req, res) {
+router.post('/api/restore/:id', function (req, res) {
     Article.findByIdAndUpdate(req.params.id,
-        { $set: { deleted: false} },
+        { $set: { deleted: false } },
         { new: true },
-        function(error, doc) {
+        function (error, doc) {
             if (error) {
                 console.log(error);
                 res.status(500);
@@ -166,39 +168,41 @@ router.post('/api/restore/:id', function(req, res) {
 });
 
 // scrape articles
-router.get('/api/articles/scrape', function(req, res, next) {
-    request('https://www.npr.org/sections/news/', function(error, response, html) {
-        let $ = cheerio.load(html);
-        let results = [];
-        $('article').each(function(i, e) {
-            
-            let title = $(this).children('.item-info').children('.title').children('a').text(),
-                link = $(this).children('.item-info').children('.title').children('a').attr('href'),
-                summary = $(this).children('.item-info').children('.teaser').children('a').text(),
-                single = {};
-            if (link !== undefined && link.includes('http') &&  title !== '') {
-                single = {
-                    title: title,
-                    link: link,
-                    summary:summary
-                };
-                // create new article
-                let entry = new Article(single);
-                // save to database
-                entry.save(function(err, doc) {
-                    if (err) {
-                        if (!err.errors.link) {
-                            console.log(err);
-                        }
-                    } else {
-                        console.log('new article added');
+router.get('/api/articles/scrape', function (req, res, next) {
+    // First, we grab the body of the html with axios
+    axios.get("https://www.npr.org/sections/news/").then(function (response) {
+        // Then, we load that into cheerio and save it to $ for a shorthand selector
+        var $ = cheerio.load(response.data);
+
+        // Now, we grab every h2 within an article tag, and do the following:
+        $("article").each(function (i, element) {
+            // Save an empty result object
+            var result = {};
+
+            // Add the text and href of every link, and save them as properties of the result object
+            result.title = $(this).children('.item-info').children('.title').children('a').text();
+            result.link = $(this).children('.item-info').children('.title').children('a').attr('href');
+            result.summary = $(this).children('.item-info').children('.teaser').children('a').text();
+
+
+            // create new article
+            let entry = new Article(result);
+            // save to database
+            entry.save(function (err, doc) {
+                if (err) {
+                    if (!err.errors.link) {
+                        console.log(err);
                     }
-                });
-            }
+                } else {
+                    console.log('new article added');
+                }
+            });
         });
         next();
     });
-}, function(req, res) {
+
+
+}, function (req, res) {
     res.redirect('/');
 });
 
@@ -206,10 +210,10 @@ router.get('/api/articles/scrape', function(req, res, next) {
 //===========================api/notes====================
 
 // get all notes
-router.get('/api/notes', function(req, res) {
+router.get('/api/notes', function (req, res) {
     Note
         .find({})
-        .exec(function(err, notes) {
+        .exec(function (err, notes) {
             if (err) {
                 console.log(err);
                 res.status(500);
@@ -223,10 +227,10 @@ router.get('/api/notes', function(req, res) {
 
 
 // add a note to a saved article
-router.post('/api/notes/:id', function(req, res) {
+router.post('/api/notes/:id', function (req, res) {
     let newNote = new Note(req.body);
     console.log(req.body);
-    newNote.save(function(err, doc) {
+    newNote.save(function (err, doc) {
         if (err) {
             console.log(err);
             res.status(500);
@@ -234,7 +238,7 @@ router.post('/api/notes/:id', function(req, res) {
             Article.findOneAndUpdate(
                 { _id: req.params.id },
                 { $push: { 'notes': doc.id } },
-                function(error, newDoc) {
+                function (error, newDoc) {
                     if (error) {
                         console.log(error);
                         res.status(500);
@@ -248,8 +252,8 @@ router.post('/api/notes/:id', function(req, res) {
 });
 
 // delete a note from a saved article
-router.delete('/api/notes/:id', function(req, res) {
-    Note.findByIdAndRemove(req.params.id, function(err, note) {
+router.delete('/api/notes/:id', function (req, res) {
+    Note.findByIdAndRemove(req.params.id, function (err, note) {
         if (err) {
             console.log(err);
             res.status(500);
