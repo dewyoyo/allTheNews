@@ -132,20 +132,6 @@ router.post('/api/articles/save/:id', function(req, res) {
         });
 });
 
-// // dismiss a scraped article
-// router.delete('/api/articles/dismiss/:id', function(req, res) {
-//     Article.findByIdAndUpdate(req.params.id,
-//         { $set: { deleted: true } },
-//         { new: true },
-//         function(error, doc) {
-//             if (error) {
-//                 console.log(error);
-//                 res.status(500);
-//             } else {
-//                 res.redirect('/');
-//             }
-//         });
-// });
 
 // delete a saved article
 router.delete('/api/articles/:id', function(req, res) {
@@ -163,7 +149,7 @@ router.delete('/api/articles/:id', function(req, res) {
     );
 });
 
-// restore a saved article-------chris
+// restore a saved article
 router.post('/api/restore/:id', function(req, res) {
     Article.findByIdAndUpdate(req.params.id,
         { $set: { deleted: false} },
@@ -173,7 +159,7 @@ router.post('/api/restore/:id', function(req, res) {
                 console.log(error);
                 res.status(500);
             } else {
-                res.redirect('/saved');
+                res.redirect('/deleted');
             }
         }
     );
@@ -185,19 +171,16 @@ router.get('/api/articles/scrape', function(req, res, next) {
         let $ = cheerio.load(html);
         let results = [];
         $('article').each(function(i, e) {
-            // Add the text and href of every link, and save them as properties of the result object
-        // result.title = $(this).children('.item-info').children('.title').children('a').text();
-        // result.link = $(this).children('.item-info').children('.title').children('a').attr('href');
-
-            // let summary = $(this).children('.item-info').children('.teaser').children('a').text()
             
             let title = $(this).children('.item-info').children('.title').children('a').text(),
                 link = $(this).children('.item-info').children('.title').children('a').attr('href'),
+                summary = $(this).children('.item-info').children('.teaser').children('a').text(),
                 single = {};
             if (link !== undefined && link.includes('http') &&  title !== '') {
                 single = {
                     title: title,
-                    link: link
+                    link: link,
+                    summary:summary
                 };
                 // create new article
                 let entry = new Article(single);
