@@ -1,6 +1,6 @@
 var express = require('express'),
       exphbs = require('express-handlebars'),
-      bodyParser = require('body-parser'),
+    //   bodyParser = require('body-parser'),
       logger = require('morgan'),
       mongoose = require('mongoose'),
       methodOverride = require('method-override');
