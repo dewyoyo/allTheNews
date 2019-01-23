@@ -14,39 +14,15 @@ var axios = require("axios");
 var PORT = process.env.PORT || 3000;
 var app = express();
 
-// app
-//     .use(bodyParser.json())
-//     .use(bodyParser.urlencoded({ extended:true }))
-//     .use(bodyParser.text())
-//     .use(bodyParser.json({ type: 'application/vnd.api+json' }))
-//     .use(methodOverride('_method'))
-//     .use(logger('dev'))
-//     .use(express.static(__dirname + '/public'))
-//     .engine('handlebars', exphbs({ defaultLayout: 'main' }))
-//     .set('view engine', 'handlebars')
-//     .use(require('./controllers'));
-
 app
     .use(express.json())
     .use(express.urlencoded({ extended: true }))
-    .use(bodyParser.text())
-    // .use(bodyParser.json({ type: 'application/vnd.api+json' }))
     .use(methodOverride('_method'))
     .use(logger('dev'))
     .use(express.static("public"))
     .engine('handlebars', exphbs({ defaultLayout: 'main' }))
     .set('view engine', 'handlebars')
     .use(require('./controllers'));
-
-
-// // Use morgan logger for logging requests
-// app.use(logger("dev"));
-// // Parse request body as JSON
-// app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
-// // Make public a static folder
-// app.use(express.static("public"));
-// app.use(require('./controllers'));
 
 
 // configure mongoose and start the server
