@@ -1,0 +1,19 @@
+/**
+ * Homework Assignment 18 - All the News That's Fit to Scrape
+ * Jarrett Tolman - assets/css/style.css
+ **/
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    padding: 70px;
+}
+
+
+ .jumbotron {
+    background-image: url("/assets/img/pexels-photo-261949.jpeg");
+    background-size: cover;
+    color: white;
+  }
