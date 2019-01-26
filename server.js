@@ -1,7 +1,6 @@
 var express = require('express'),
       exphbs = require('express-handlebars'),
-    //   bodyParser = require('body-parser'),
-      logger = require('morgan'),
+      morgan = require('morgan'),
       mongoose = require('mongoose'),
       methodOverride = require('method-override');
 // Our scraping tools
@@ -18,7 +17,7 @@ app
     .use(express.json())
     .use(express.urlencoded({ extended: true }))
     .use(methodOverride('_method'))
-    .use(logger('dev'))
+    .use(morgan('dev'))
     .use(express.static("public"))
     .engine('handlebars', exphbs({ defaultLayout: 'main' }))
     .set('view engine', 'handlebars')
@@ -35,7 +34,7 @@ app
 
 mongoose.Promise = Promise;
 
-var dbURI = process.env.MONGODB_URI || "mongodb://localhost:27017/news";
+var dbURI = process.env.MONGODB_URI || "mongodb://localhost/news";
 
 // Database configuration with mongoose
 mongoose.connect(dbURI);
