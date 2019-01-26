@@ -21,6 +21,11 @@ const ArticleSchema = new Schema({
     type: String,
     required: true
   },
+  // img is a required string
+  imageURL: {
+    type: String,
+    required: true
+  },
   // saved is a boolean, default false
   saved: {
     type: Boolean,

@@ -15,11 +15,14 @@
     {{#each articles}}
     <div class="well">
         <div class="row">
-            <div class="col col-md-8">
+            <div class="col col-md-2">
+                <img src="{{this.imageURL}}" alt="image"> 
+            </div>
+            <div class="col col-md-7">
                 <h4><a href="{{this.link}}">{{this.title}}</a></h4>
                 <h6>{{this.summary}}</h6>
             </div>
-            <div class="col col-md-2">
+            <div class="col col-md-1">
                 <a class="btn btn-success" href="#" data-toggle="modal" data-target="#{{this.id}}">Notes</a>
             </div>
             <div class="col col-md-2">
