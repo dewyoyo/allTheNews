@@ -31,3 +31,6 @@ Deployed on: `Heroku`
 - Click on "deleted Articles" in Navigation bar to bring up a List of Deleted Articles.
 
 - Click on "Restore" for Restoring articles to the Saved Article.
+
+
+## Deployed Heroku site : https://safe-inlet-12518.herokuapp.com/
