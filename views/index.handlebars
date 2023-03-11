@@ -1,3 +1,4 @@
+{{!--> nav/index--}}
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -39,7 +40,7 @@
                 <h6>{{this.summary}}</h6>
             </div>
             <div class="col col-md-1">
-                <form class="form-inline" action="/api/articles/save/{{this.id}}" method="POST">
+                <form class="form-inline" action="/api/articles/save/{{this._id}}" method="POST">
                     <button type="submit" class="btn btn-success">Save Article</button>
                 </form>
             </div>

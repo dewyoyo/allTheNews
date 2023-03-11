@@ -64,7 +64,7 @@ router.get('/saved', function (req, res) {
                 let hbsObj = {
                     title: 'All the News That\'s Fit to Scrape',
                     subtitle: 'NPR News',
-                    articles: articles
+                    articles: articles.map(article => article.toJSON())
                 };
                 res.render('saved', hbsObj);
             }
@@ -90,7 +90,7 @@ router.get('/deleted', function (req, res) {
                 let hbsObj = {
                     title: 'All the News That\'s Fit to Scrape',
                     subtitle: 'NPR News',
-                    articles: articles
+                    articles: articles.map(article => article.toJSON())
                 };
                 res.render('deleted', hbsObj);
             }
@@ -195,25 +195,36 @@ router.get('/api/articles/scrape', function (req, res, next) {
             // Save an empty result object
             var result = {};
 //$("article").children('.item-image').children('.imagewrap').children('a').children('img').children('src');
-            // Add the text and href of every link, and save them as properties of the result object
-            result.title = $(this).children('.item-info-wrap').children('.item-info').children('.title').children('a').text();
-            result.link = $(this).children('.item-info-wrap').children('.item-info').children('.teaser').children('a').attr('href');
-            result.summary = $(this).children('.item-info-wrap').children('.item-info').children('.teaser').children('a').text();
-            result.imageURL = $(this).children('.item-image').children('.imagewrap').children('a').children('picture').children('img').attr('src');
+
+            if ($(this).children('.item-image').children('.imagewrap').children('a').children('picture').children('img').attr('src') == null) {       
+                next();
+            }
+            else {
+                // Add the text and href of every link, and save them as properties of the result object
+                result.title = $(this).children('.item-info-wrap').children('.item-info').children('.title').children('a').text();
+                result.link = $(this).children('.item-info-wrap').children('.item-info').children('.teaser').children('a').attr('href');
+                result.summary = $(this).children('.item-info-wrap').children('.item-info').children('.teaser').children('a').text();
+                result.imageURL = $(this).children('.item-image').children('.imagewrap').children('a').children('picture').children('img').attr('src');
 
 
-            // create new article
-            let entry = new Article(result);
-            // save to database
-            entry.save(function (err, doc) {
-                if (err) {
-                    if (!err.errors.link) {
-                        console.log(err);
+                // create new article
+                let entry = new Article(result);
+                // save to database
+                entry.save(function (err, doc) {
+                    if (err) {
+                        if (!err.errors) {
+                            console.log(err);
+                        }
+                    } else {
+                        console.log('new article added');
                     }
-                } else {
-                    console.log('new article added');
-                }
-            });
+                });
+
+
+            }
+
+
+
         });
         next();
     });

@@ -38,14 +38,64 @@
                 <h6>{{this.summary}}</h6>
             </div>
             <div class="col col-md-2">
-                <form class="form-inline" action="/api/restore/{{this.id}}?_method=RESTORE" method="POST">
+                <form class="form-inline" action="/api/restore/{{this._id}}?_method=RESTORE" method="POST">
                     <button type="submit" class="btn btn-success">Restore Article</button>
                 </form>
             </div>
         </div>
     </div>
 
-    {{> content/modal}}
+
+
+    {{!--> content/modal--}}
+    <div class="modal fade" id="{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="notesModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Notes for {{this.title}}</h4>
+                </div>
+                <div class="modal-body">
+                    {{#if this.notes}}
+                    {{#each this.notes}}
+                    <div class="well">
+                        <div class="row">
+                            <div class="col col-md-8">
+                                <p>{{this.text}}</p>
+                            </div>
+                            <div class="col col-md-2">
+                                <form class="form-inline" action="/api/notes/{{this.id}}?_method=DELETE" method="POST">
+                                    <button type="submit" class="btn btn-danger">Delete Note</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{else}}
+                    <div class="well">
+                        <p>This story does not have any notes.</p>
+                    </div>
+                    <br>
+                    {{!-- note submit(POST) --}}
+                    <div class="row">
+                        <div class="col col-md-8">
+                            <form class="form-inline" action="/api/notes/{{this.id}}" method="POST">
+                                <input type="text" class="form-control" id="text" name="text" placeholder="Add a new note...">
+                                <button type="submit" class="btn btn-info">Add Note</button>
+                            </form>
+                        </div>
+                        <div class="col col-md-4">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
     {{/each}}
     {{else}}
