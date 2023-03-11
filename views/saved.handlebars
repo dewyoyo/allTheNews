@@ -38,7 +38,7 @@
                 <h6>{{this.summary}}</h6>
             </div>
             <div class="col col-md-1">
-                <a class="btn btn-success" href="#" data-toggle="modal" data-target="#{{this.id}}">Notes</a>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#{{this._id}}">Notes</button>
             </div>
             <div class="col col-md-2">
                 <form class="form-inline" action="/api/articles/{{this._id}}?_method=DELETE" method="POST">
@@ -53,7 +53,7 @@
 
 
     {{!--> content/modal--}}
-    <div class="modal fade" id="{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="notesModal">
+    <div class="modal fade" id="{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="notesModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -69,7 +69,7 @@
                                 <p>{{this.text}}</p>
                             </div>
                             <div class="col col-md-2">
-                                <form class="form-inline" action="/api/notes/{{this.id}}?_method=DELETE" method="POST">
+                                <form class="form-inline" action="/api/notes/{{this._id}}?_method=DELETE" method="POST">
                                     <button type="submit" class="btn btn-danger">Delete Note</button>
                                 </form>
                             </div>
@@ -84,7 +84,7 @@
                     {{!-- note submit(POST) --}}
                     <div class="row">
                         <div class="col col-md-8">
-                            <form class="form-inline" action="/api/notes/{{this.id}}" method="POST">
+                            <form class="form-inline" action="/api/notes/{{this._id}}" method="POST">
                                 <input type="text" class="form-control" id="text" name="text" placeholder="Add a new note...">
                                 <button type="submit" class="btn btn-info">Add Note</button>
                             </form>
