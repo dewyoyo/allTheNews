@@ -2,11 +2,13 @@ var express = require('express'),
       exphbs = require('express-handlebars'),
       morgan = require('morgan'),
       mongoose = require('mongoose'),
-      methodOverride = require('method-override');
+    methodOverride = require('method-override');
+var path = require('path');
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
 // It works on the client and on the server
 var axios = require("axios");
+
 
 // set up express app
 // =============================================================
@@ -19,7 +21,8 @@ app
     .use(methodOverride('_method'))
     .use(morgan('dev'))
     .use(express.static("public"))
-    .engine('handlebars', exphbs({ defaultLayout: 'main' }))
+    .engine('handlebars', exphbs.engine({ defaultLayout: 'main'}))
+    .set('views', path.join(__dirname, 'views'))
     .set('view engine', 'handlebars')
     .use(require('./controllers'));
 
@@ -30,14 +33,14 @@ app
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 // var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-// mongoose.connect(MONGODB_URI);
+// mongoose.connect(MONGODB_URI, { useUnifiedTopology: true });
 
 mongoose.Promise = Promise;
 
-var dbURI = process.env.MONGODB_URI || "mongodb://localhost/news";
+var dbURI = process.env.MONGODB_URI || "mongodb://127.0.0.1/news";
 
 // Database configuration with mongoose
-mongoose.connect(dbURI);
+mongoose.connect(dbURI, { useUnifiedTopology: true }, { useNewUrlParser: true });
 
 var db = mongoose.connection;
 

@@ -9,6 +9,7 @@ const express = require('express'),
 // It works on the client and on the server
 var axios = require("axios");
 
+
 // root route
 router.get('/', function (req, res) {
     Article
@@ -17,17 +18,30 @@ router.get('/', function (req, res) {
         .where('deleted').equals(false)
         .sort('-date')
         .limit(30)
+//        .exec(function (error, articles) {
+//            if (error) {
+//                console.log(error);
+//                res.status(500);
+//            } else {
+//                console.log(articles);
+//                    let hbsObj = {
+//                        title: 'All the News That\'s Fit to Scrape',
+//                        subtitle: 'NPR News',
+//                        articles: articles
+//                    };
         .exec(function (error, articles) {
             if (error) {
                 console.log(error);
                 res.status(500);
             } else {
                 console.log(articles);
-                let hbsObj = {
-                    title: 'All the News That\'s Fit to Scrape',
-                    subtitle: 'NPR News',
-                    articles: articles
-                };
+                    let hbsObj = {
+                        title: 'All the News That\'s Fit to Scrape',
+                        subtitle: 'NPR News',
+                        articles: articles.map(article => article.toJSON())
+                    };
+
+
                 res.render('index', hbsObj);
             }
         });
@@ -174,16 +188,18 @@ router.get('/api/articles/scrape', function (req, res, next) {
         // Then, we load that into cheerio and save it to $ for a shorthand selector
         var $ = cheerio.load(response.data);
 
+        console.log($("article"));
+
         // Now, we grab every h2 within an article tag, and do the following:
         $("article").each(function (i, element) {
             // Save an empty result object
             var result = {};
 //$("article").children('.item-image').children('.imagewrap').children('a').children('img').children('src');
             // Add the text and href of every link, and save them as properties of the result object
-            result.title = $(this).children('.item-info').children('.title').children('a').text();
-            result.link = $(this).children('.item-info').children('.title').children('a').attr('href');
-            result.summary = $(this).children('.item-info').children('.teaser').children('a').text();
-            result.imageURL = $(this).children('.item-image').children('.imagewrap').children('a').children('img').attr('src');
+            result.title = $(this).children('.item-info-wrap').children('.item-info').children('.title').children('a').text();
+            result.link = $(this).children('.item-info-wrap').children('.item-info').children('.teaser').children('a').attr('href');
+            result.summary = $(this).children('.item-info-wrap').children('.item-info').children('.teaser').children('a').text();
+            result.imageURL = $(this).children('.item-image').children('.imagewrap').children('a').children('picture').children('img').attr('src');
 
 
             // create new article

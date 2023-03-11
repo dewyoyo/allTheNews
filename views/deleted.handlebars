@@ -1,4 +1,19 @@
-{{> navs/deleted}}
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Mongo Scraper</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/saved">Saved Articles</a></li>
+            <li class="active"><a href="/deleted">Deleted Articles</a></li>
+        </ul>
+    </div>
+</nav>
+
+
+
+
 
 <div class="jumbotron text-center">
     <div class="background-image">
@@ -16,7 +31,7 @@
     <div class="well">
         <div class="row">
             <div class="col col-md-2">
-                <img src="{{this.imageURL}}" alt="image"> 
+                <img src="{{this.imageURL}}" alt="image">
             </div>
             <div class="col col-md-8">
                 <h4><a href="{{this.link}}">{{this.title}}</a></h4>
