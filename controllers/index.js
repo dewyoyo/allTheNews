@@ -2,6 +2,7 @@ const express = require('express'),
     router = express.Router(),
     request = require('request'),
     cheerio = require('cheerio'),
+    exphbs = require('express-handlebars'),
     Article = require('../models/article'),
     Note = require('../models/note');
 // Our scraping tools
@@ -29,21 +30,20 @@ router.get('/', function (req, res) {
 //                        subtitle: 'NPR News',
 //                        articles: articles
 //                    };
-        .exec(function (error, articles) {
-            if (error) {
-                console.log(error);
-                res.status(500);
-            } else {
-                console.log(articles);
-                    let hbsObj = {
-                        title: 'All the News That\'s Fit to Scrape',
-                        subtitle: 'NPR News',
-                        articles: articles.map(article => article.toJSON())
-                    };
+        .then((articles) => {
+            console.log(articles);
+            let hbsObj = {
+                title: 'All the News That\'s Fit to Scrape',
+                subtitle: 'NPR News',
+                articles: articles.map(article => article.toJSON())
+            };
+            console.log(res);
 
-
-                res.render('index', hbsObj);
-            }
+            res.render('index', hbsObj);
+            
+        }).catch((err) => {
+            //catch error
+            console.log(err);
         });
 });
 
@@ -55,19 +55,18 @@ router.get('/saved', function (req, res) {
         .where('deleted').equals(false)
         .populate('notes')
         .sort('-date')
-        .exec(function (error, articles) {
-            if (error) {
-                console.log(error);
-                res.status(500);
-            } else {
-                console.log(articles);
-                let hbsObj = {
-                    title: 'All the News That\'s Fit to Scrape',
-                    subtitle: 'NPR News',
-                    articles: articles.map(article => article.toJSON())
-                };
-                res.render('saved', hbsObj);
-            }
+        .then((articles) => {
+            console.log(articles);
+            let hbsObj = {
+                title: 'All the News That\'s Fit to Scrape',
+                subtitle: 'NPR News',
+                articles: articles.map(article => article.toJSON())
+            };
+            res.render('saved', hbsObj);
+
+        }).catch((err) => {
+            //catch error
+            console.log(err);
         });
 });
 
@@ -81,19 +80,16 @@ router.get('/deleted', function (req, res) {
         .where('deleted').equals(true)
         .populate('notes')
         .sort('-date')
-        .exec(function (error, articles) {
-            if (error) {
-                console.log(error);
-                res.status(500);
-            } else {
-                console.log(articles);
-                let hbsObj = {
-                    title: 'All the News That\'s Fit to Scrape',
-                    subtitle: 'NPR News',
-                    articles: articles.map(article => article.toJSON())
-                };
-                res.render('deleted', hbsObj);
-            }
+        .then((articles) => {
+            console.log(articles);
+            let hbsObj = {
+                title: 'All the News That\'s Fit to Scrape',
+                subtitle: 'NPR News',
+                articles: articles.map(article => article.toJSON())
+            };
+            res.render('deleted', hbsObj);
+        }).catch((err) => {
+            console.log(err);
         });
 });
 
@@ -104,13 +100,12 @@ router.get('/deleted', function (req, res) {
 router.get('/api/articles', function (req, res) {
     Article
         .find({})
-        .exec(function (error, docs) {
-            if (error) {
-                console.log(error);
-                res.status(500);
-            } else {
-                res.status(200).json(docs);
-            }
+        .then((docs) => {
+
+            res.status(200).json(docs);
+
+        }).catch((err) => {
+            console.log(err);
         });
 });
 
@@ -121,13 +116,10 @@ router.get('/api/articles/saved', function (req, res) {
         .where('saved').equals(true)
         .where('deleted').equals(false)
         .populate('notes')
-        .exec(function (error, docs) {
-            if (error) {
-                console.log(error);
-                res.status(500);
-            } else {
-                res.status(200).json(docs);
-            }
+        .then((docs) => {
+            res.status(200).json(docs);
+        }).catch((err) => {
+            console.log(err);
         });
 });
 
@@ -194,9 +186,9 @@ router.get('/api/articles/scrape', function (req, res, next) {
         $("article").each(function (i, element) {
             // Save an empty result object
             var result = {};
-//$("article").children('.item-image').children('.imagewrap').children('a').children('img').children('src');
+            //$("article").children('.item-image').children('.imagewrap').children('a').children('img').children('src');
 
-            if ($(this).children('.item-image').children('.imagewrap').children('a').children('picture').children('img').attr('src') == null) {       
+            if ($(this).children('.item-image').children('.imagewrap').children('a').children('picture').children('img').attr('src') == null) {
                 next();
             }
             else {
@@ -210,14 +202,10 @@ router.get('/api/articles/scrape', function (req, res, next) {
                 // create new article
                 let entry = new Article(result);
                 // save to database
-                entry.save(function (err, doc) {
-                    if (err) {
-                        if (!err.errors) {
-                            console.log(err);
-                        }
-                    } else {
-                        console.log('new article added');
-                    }
+                entry.save((doc) => {
+                    console.log('new article added');
+                }).catch((err) => {
+                    console.log(err);
                 });
 
 
@@ -241,13 +229,10 @@ router.get('/api/articles/scrape', function (req, res, next) {
 router.get('/api/notes', function (req, res) {
     Note
         .find({})
-        .exec(function (err, notes) {
-            if (err) {
-                console.log(err);
-                res.status(500);
-            } else {
-                res.status(200).json(notes);
-            }
+        .then((notes) => {
+            res.status(200).json(notes);
+        }).catch((err) => {
+            console.log(err);
         });
 });
 
