@@ -27,6 +27,8 @@
 
 
 <div id="articles">
+    {{#if articles}}
+
     {{#each articles}}
     <div class="well">
         <div class="row">
@@ -45,4 +47,11 @@
         </div>
     </div>
     {{/each}}
+
+    {{else}}
+    <div class="well">
+        <h4>There is no article.</h4>
+    </div>
+    {{/if}}
+
 </div>
