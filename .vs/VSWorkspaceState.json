@@ -3,8 +3,11 @@
     "",
     "\\controllers",
     "\\models",
-    "\\views"
+    "\\views",
+    "\\views\\layouts",
+    "\\views\\partials",
+    "\\views\\partials\\navs"
   ],
-  "SelectedNode": "\\server.js",
+  "SelectedNode": "\\controllers\\index.js",
   "PreviewInSolutionExplorer": false
 }
